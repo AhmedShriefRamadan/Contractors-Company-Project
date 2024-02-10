@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Excel-like Frontend Page</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-top: 50px;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 90%;
+    }
+
+    table,
+    th,
+    td {
+        border: 1px solid #ccc;
+    }
+
+    th,
+    td {
+        padding: 10px;
+        text-align: center;
+    }
+
+    td.editable {
+        cursor: pointer;
+    }
+
+    td.editable input {
+        border: none;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+    button {
+        margin-top: 10px;
+        border-radius: 10px;
+        width: 20%;
+        height: 35px;
+        font-size: large;
+        font-weight: bold;
+    }
+    </style>
+</head>
+<body>
+    <table id="excel-like-table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>A</th>
+            <th>B</th>
+            <th>C</th>
+            <th>D</th>
+            <th>E</th>
+            <th>F</th>
+            <th>G</th>
+            <th>H</th>
+            <th>I</th>
+            <th>J</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1</td>
+            <td class="editable" contenteditable="true"></td>
+            <td class="editable" contenteditable="true"></td>
+            <td class="editable" contenteditable="true"></td>
+            <td class="editable" contenteditable="true"></td>
+            <td class="editable" contenteditable="true"></td>
+            <td class="editable" contenteditable="true"></td>
+            <td class="editable" contenteditable="true"></td>
+            <td class="editable" contenteditable="true"></td>
+            <td class="editable" contenteditable="true"></td>
+            <td class="editable" contenteditable="true"></td>
+        </tr>
+        <!-- Add more rows as needed -->
+        </tbody>
+    </table>
+
+    <button onclick="addRow()">Add New Row</button>
+    <button onclick="getData()">Create Excel File</button>
+
+    <script>
+      var rowCount = 2; // Counter for row numbers
+
+    function addRow() {
+        var table = document.getElementById("excel-like-table");
+        var newRow = table.insertRow(); // Insert row without specifying index
+
+        // Add row number cell to the new row
+        var cell = newRow.insertCell(0);
+        cell.textContent = rowCount;
+        rowCount++; // Increment the counter
+
+        // Add cells to the new row with different numbers
+        for (var i = 1; i <= 10; i++) {
+          // Start from index 1 to avoid adding number to the first column
+            var cell = newRow.insertCell(i);
+            cell.classList.add("editable");
+            cell.contentEditable = true;
+            cell.textContent = ""; // Generate random numbers
+        }
+    }
+
+    function getData() {
+        var table = document.getElementById("excel-like-table");
+        var data = [];
+
+        // Iterate through each row in the table
+        for (var i = 0; i < table.rows.length; i++) {
+        var rowData = [];
+
+          // Iterate through each cell in the row
+        for (var j = 1; j < table.rows[i].cells.length; j++) {
+            // Get the text content of the cell and push it to the row data array
+            var cellValue = table.rows[i].cells[j].textContent;
+            rowData.push(cellValue);
+        }
+
+          // Push the row data array to the data array
+        data.push(rowData);
+        }
+
+        // Send the data to Django view using AJAX
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'http://127.0.0.1:8000/create/excel/', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify(data));
+
+      // Log the data to the console (you can process it further as needed)
+    // console.log(data);
+
+    // Redirect the user after sending the data
+    window.location.href = 'http://127.0.0.1:8000/create/excel/';
+    }
+    </script>
+</body>
+</html>
